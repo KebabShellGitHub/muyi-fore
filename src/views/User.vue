@@ -2,7 +2,7 @@
   <div>
     <a-row>
       <a-col :span="8" style="text-align: center">
-        <a-avatar :size="256" :src="'http://localhost:8080/pic/avatar/' + userDtl.userAvatarUrl"
+        <a-avatar :size="256" :src="'/api/pic/' + userDtl.userAvatarUrl"
                   style="border: 2px solid cornflowerblue"/>
       </a-col>
       <a-col :span="10">
@@ -72,12 +72,12 @@ export default {
     }
   },
   methods: {
-    getUser: function (){
-      this.$axios.post("/api/user/get",
+    getUser: function () {
+      this.$axios.get("/api/user/get",
           {
-            userId: this.nowUserId
-          },
-          {
+            params: {
+              userId: this.nowUserId
+            },
             headers: {
               Token: sessionStorage.getItem("Token")
             }
@@ -86,12 +86,12 @@ export default {
             this.userBase = response.data.data.userBase;
             this.userDtl = response.data.data.userDtl;
           })
-      .catch(error => {
-        console.log("error")
-      })
+          .catch(error => {
+            console.log("error")
+          })
     },
-    toUpload(){
-      this.$router.push({ name: 'Upload' })
+    toUpload() {
+      this.$router.push({name: 'Upload'})
     }
   }
 };

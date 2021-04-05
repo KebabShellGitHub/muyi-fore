@@ -2,13 +2,15 @@
   <div>
     <a-row>
       <a-col :span="20" style="text-align: center">
-        <a-card v-for="item in pics" :key="item.picId" hoverable style="width: 250px" class="card">
-          <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-          <a-card-meta :title="item.authorName" :description="item.authorDesc">
+        <a-card v-for="item in pics" :key="item.pic.id" hoverable style="width: 250px" class="card">
+          <img slot="cover" alt="example"
+               :src="'/api/pic/' + item.pic.picThumbUrl"
+               @click="toPicDetail(item.pic.id)"/>
+          <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
             <a-avatar
                 slot="avatar"
-                :src="item.thumbAvatar"
-                @click="toAuthorDetail(item.authorId)"
+                :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+                @click="toAuthorDetail(item.author.userId)"
             />
           </a-card-meta>
         </a-card>
@@ -35,119 +37,53 @@ export default {
   name: "Category",
   data() {
     return {
-      pageNums: 1,
-      sortNames: ['Apple', 'Pear', 'Orange', 'A','B','C','D','E'],
+      pageNum: 1,
+      count: 3,
+      pics: [],
+      sortNames: ['t1', 't2'],
       sortValue: [],
-      pics: [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ]
     }
   },
   created() {
     let sortName = this.$route.params.sortName;
     let sortNames = [];
-    if (typeof (sortName) == 'undefined'){
+    if (typeof (sortName) == 'undefined') {
       // 从菜单栏过来的，没有带分类信息
       console.log("undefined")
       // 那就请求并渲染全部热门数据
-    }else {
+    } else {
       // 有带分类信息
       console.log("sortName:" + sortName)
       sortNames.push(sortName);
       // 请求并渲染此分类集合的热门数据
     }
-    this.getPics(sortNames, 1);
+    this.getPics(sortNames).then(res => {
+      this.pics = res.data.data
+    });
   },
   methods: {
     // 分类集合变化时
     onChange(checkedValues) {
-      console.log('checked = ', checkedValues);
-      console.log('value = ', this.sortValue);
+      // console.log('checked = ', checkedValues);
+      // console.log('value = ', this.sortValue);
       // 通过选中的分类集合来请求图片
-      this.getPics(this.sortValue, 1);
+      this.getPics(this.sortValue).then(res => {
+        this.pics = res.data.data
+      });
     },
     // 拿到分类集合的count数目的图片
-    getPics(sortNames, count){
-      this.pics = [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 2,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 3,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 4,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 5,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 6,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ]
+    getPics(sortName) {
+      // 根据分类id来拿到这个分类的4张热门图片
+      return this.$axios.get("/api/pic/hm/sort?sortName="
+          + sortName.join() + "&pageNum=1&count=" + this.count)
     },
-    // 拿到count数目的图片
-    getMorePics(count){
-      this.pageNums++;
-      let morePics = [
-        {
-          picId: 7,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 8,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        }
-      ];
-      this.pics.push.apply(this.pics, morePics);
+    // 拿到更多图片
+    getMorePics() {
+      this.pageNum++;
+      this.$axios.get("/api/pic/hm/sort?pageNum=" + this.pageNum + "&count=" + this.count)
+          .then(res => {
+            this.pics.push.apply(this.pics, res.data.data);
+          })
     },
     // 跳转到具体图片页面
     toPicDetail(picId) {
@@ -184,7 +120,8 @@ export default {
   object-fit: cover;
   height: 250px;
 }
-.sortPart{
+
+.sortPart {
   position: fixed;
   width: 200px;
   margin-top: 20px;

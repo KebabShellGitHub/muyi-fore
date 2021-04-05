@@ -16,7 +16,7 @@
           <router-link v-if="token !== null" to="/user"
           >
             <a-avatar size="small" style="backgroundColor:#87d068" icon="user"
-                      :src="'http://localhost:8080/pic/avatar-thumb/' + userAvatar"
+                      :src="'/api/pic/' + userAvatar"
             />
           </router-link>
           <div v-else>

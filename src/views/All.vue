@@ -1,17 +1,29 @@
 <template>
   <div style="text-align: center">
-    <a-card v-for="item in pics" :key="item.picId" hoverable style="width: 400px" class="card">
-      <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-      <a-card-meta :title="item.authorName" :description="item.authorDesc">
+    <!--<a-card v-for="item in pics" :key="item.picId" hoverable style="width: 400px" class="card">-->
+    <!--  <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>-->
+    <!--  <a-card-meta :title="item.authorName" :description="item.authorDesc">-->
+    <!--    <a-avatar-->
+    <!--        slot="avatar"-->
+    <!--        :src="item.thumbAvatar"-->
+    <!--        @click="toAuthorDetail(item.authorId)"-->
+    <!--    />-->
+    <!--  </a-card-meta>-->
+    <!--</a-card>-->
+    <a-card v-for="item in pics" :key="item.pic.id" hoverable style="width: 400px" class="card">
+      <img slot="cover" alt="example"
+           :src="'/api/pic/' + item.pic.picThumbUrl"
+           @click="toPicDetail(item.pic.id)"/>
+      <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
         <a-avatar
             slot="avatar"
-            :src="item.thumbAvatar"
-            @click="toAuthorDetail(item.authorId)"
+            :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+            @click="toAuthorDetail(item.author.userId)"
         />
       </a-card-meta>
     </a-card>
     <div>
-      <a-button @click="getMorePics(1)">more</a-button>
+      <a-button @click="getMorePics">more</a-button>
     </div>
 
   </div>
@@ -22,98 +34,29 @@ export default {
   name: "All",
   data() {
     return {
-      pageNums: 1,
-      pics: [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ]
+      pageNum: 1,
+      count: 3,
+      pics: []
     }
   },
   created() {
-    this.getPics(1);
+    this.getPics();
   },
   methods: {
     // 拿到count数目的图片
-    getPics(count){
-      this.pics = [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 2,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 3,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 4,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 5,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 6,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ]
+    getPics() {
+      this.$axios.get("/api/pic/all?pageNum=" + this.pageNum + "&count=" + this.count)
+          .then(res => {
+            this.pics = res.data.data
+          })
     },
-    // 拿到count数目的图片
-    getMorePics(count){
-      this.pageNums++;
-      let morePics = [
-        {
-          picId: 7,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 8,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        }
-      ];
-      this.pics.push.apply(this.pics, morePics);
+    // 拿到更多图片
+    getMorePics() {
+      this.pageNum++;
+      this.$axios.get("/api/pic/all?pageNum=" + this.pageNum + "&count=" + this.count)
+          .then(res => {
+            this.pics.push.apply(this.pics, res.data.data);
+          })
     },
     // 跳转到具体图片页面
     toPicDetail(picId) {

@@ -5,7 +5,7 @@
         <!--     car:carousel走马灯     -->
         <div class="gradient">
           <!--    gradient:渐变    -->
-          <img class="car-img" :src="'http://localhost:8080/pic/' + carFirstPic.picUrl" @click="toPicDetail(carFirstPic.picId)"/>
+          <img class="car-img" :src="'/api/pic/' + carFirstPic.picUrl" @click="toPicDetail(carFirstPic.picId)"/>
         </div>
         <img v-for="item in carPics" :key="item.picId" class="car-img" :src="'http://localhost:8080/pic/' + item.picUrl"
              @click="toPicDetail(item.picId)"/>
@@ -39,13 +39,15 @@
       </a-button>
     </div>
     <div class="all-card">
-      <a-card v-for="item in hotPics" :key="item.picId" hoverable style="width: 300px" class="card">
-        <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-        <a-card-meta :title="item.authorName" :description="item.authorDesc">
+      <a-card v-for="item in hotPics" :key="item.pic.id" hoverable style="width: 300px" class="card">
+        <img slot="cover" alt="example"
+             :src="'/api/pic/' + item.pic.picThumbUrl"
+             @click="toPicDetail(item.pic.id)"/>
+        <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
           <a-avatar
               slot="avatar"
-              :src="item.thumbAvatar"
-              @click="toAuthorDetail(item.authorId)"
+              :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+              @click="toAuthorDetail(item.author.userId)"
           />
         </a-card-meta>
       </a-card>
@@ -58,13 +60,15 @@
       </a-button>
     </div>
     <div class="all-card">
-      <a-card v-for="item in hotSort1Pics" :key="item.picId" hoverable style="width: 300px" class="card">
-        <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-        <a-card-meta :title="item.authorName" :description="item.authorDesc">
+      <a-card v-for="item in hotSort1Pics" :key="item.pic.id" hoverable style="width: 300px" class="card">
+        <img slot="cover" alt="example"
+             :src="'/api/pic/' + item.pic.picThumbUrl"
+             @click="toPicDetail(item.pic.id)"/>
+        <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
           <a-avatar
               slot="avatar"
-              :src="item.thumbAvatar"
-              @click="toAuthorDetail(item.authorId)"
+              :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+              @click="toAuthorDetail(item.author.userId)"
           />
         </a-card-meta>
       </a-card>
@@ -77,13 +81,15 @@
       </a-button>
     </div>
     <div class="all-card">
-      <a-card v-for="item in hotSort2Pics" :key="item.picId" hoverable style="width: 300px" class="card">
-        <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-        <a-card-meta :title="item.authorName" :description="item.authorDesc">
+      <a-card v-for="item in hotSort2Pics" :key="item.pic.id" hoverable style="width: 300px" class="card">
+        <img slot="cover" alt="example"
+             :src="'/api/pic/' + item.pic.picThumbUrl"
+             @click="toPicDetail(item.pic.id)"/>
+        <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
           <a-avatar
               slot="avatar"
-              :src="item.thumbAvatar"
-              @click="toAuthorDetail(item.authorId)"
+              :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+              @click="toAuthorDetail(item.author.userId)"
           />
         </a-card-meta>
       </a-card>
@@ -96,13 +102,15 @@
       </a-button>
     </div>
     <div class="all-card">
-      <a-card v-for="item in hotSort3Pics" :key="item.picId" hoverable style="width: 300px" class="card">
-        <img slot="cover" alt="example" :src="item.thumbPic" @click="toPicDetail(item.picId)"/>
-        <a-card-meta :title="item.authorName" :description="item.authorDesc">
+      <a-card v-for="item in hotSort3Pics" :key="item.pic.id" hoverable style="width: 300px" class="card">
+        <img slot="cover" alt="example"
+             :src="'/api/pic/' + item.pic.picThumbUrl"
+             @click="toPicDetail(item.pic.id)"/>
+        <a-card-meta :title="item.author.userName" :description="item.author.userIntroduction">
           <a-avatar
               slot="avatar"
-              :src="item.thumbAvatar"
-              @click="toAuthorDetail(item.authorId)"
+              :src="'/api/pic/' + item.author.userAvatarThumbUrl"
+              @click="toAuthorDetail(item.author.userId)"
           />
         </a-card-meta>
       </a-card>
@@ -115,12 +123,12 @@
       </a-button>
     </div>
     <div class="all-card-er">
-      <a-card v-for="item in hotAuthors" :key="item.id" hoverable style="width: 300px" class="card"
-              @click="toAuthorDetail(item.id)">
-        <a-card-meta :title="item.authorName" :description="item.authorDesc">
+      <a-card v-for="item in hotAuthors" :key="item.userId" hoverable style="width: 300px" class="card"
+              @click="toAuthorDetail(item.userId)">
+        <a-card-meta :title="item.userName" :description="item.userIntroduction">
           <a-avatar
               slot="avatar"
-              :src="item.thumbAvatar"
+              :src="'/api/pic/' + item.userAvatarThumbUrl"
           />
         </a-card-meta>
       </a-card>
@@ -142,7 +150,20 @@ export default {
       // 今日热门的4个图片
       hotPics: [],
       // 3个热门分类
-      hotSorts: [],
+      hotSorts: [
+        {
+          id: 0,
+          sortName: 'sort'
+        },
+        {
+          id: 1,
+          sortName: 'sort'
+        },
+        {
+          id: 2,
+          sortName: 'sort'
+        },
+      ],
       // 热门分类1的4个图片
       hotSort1Pics: [],
       // 热门分类2的4个图片
@@ -161,11 +182,11 @@ export default {
     };
   },
   created() {
-    this.getCarPics();
-    this.getRecPics();
-    this.getHotPics();
+    this.getCarPics()
+    this.getRecPics()
+    this.getHotPics()
     this.getHotSorts();
-    this.getHotAuthor();
+    this.getHotAuthor()
   },
   methods: {
     // 拿到走马灯的图片
@@ -216,132 +237,35 @@ export default {
     },
     // 拿到热门图片
     getHotPics() {
-      this.hotPics = [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 2,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 3,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 4,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ];
+      this.$axios.get("/api/pic/hm/hot?count=" + 5)
+      .then(res => {
+        this.hotPics = res.data.data
+      }).catch(error => {
+        console.log("getHotPics error:" + error.message)
+      })
     },
     // 拿到3个热门分类信息，再拿到分类下的热门图片
     getHotSorts() {
-      // console.log('hotSorts');
-      this.hotSorts = [
-        {
-          id: 0,
-          sortName: 'sort'
-        },
-        {
-          id: 1,
-          sortName: 'sort'
-        },
-        {
-          id: 2,
-          sortName: 'sort'
-        },
-      ];
-      this.hotSort1Pics = this.getHotSortPics(this.hotSorts[0].id);
-      this.hotSort2Pics = this.getHotSortPics(this.hotSorts[1].id);
-      this.hotSort3Pics = this.getHotSortPics(this.hotSorts[2].id);
+      this.getHotSortPics(["t1"]).then(res => { this.hotSort1Pics = res.data.data });
+      this.getHotSortPics(["t2"]).then(res => { this.hotSort2Pics = res.data.data });
+      this.getHotSortPics([]).then(res => { this.hotSort3Pics = res.data.data });
     },
     // 拿到某个分类的4张热门图片
-    getHotSortPics(sortId) {
+    getHotSortPics(sortName) {
       // 根据分类id来拿到这个分类的4张热门图片
-      return [
-        {
-          picId: 1,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 2,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 3,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-        {
-          picId: 4,
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          thumbPic: 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png',
-          authorName: 'author',
-          authorId: 0,
-          authorDesc: 'description'
-        },
-      ];
+      return this.$axios.get("/api/pic/hm/sort?sortName="
+          + sortName.join() + "&pageNum=1&count=4")
     },
     // 拿到4个热门摄影师的信息
     getHotAuthor() {
-      this.hotAuthors = [
-        {
-          id: 1,
-          authorName: 'test',
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          authorDesc: 'description'
-        },
-        {
-          id: 2,
-          authorName: 'test',
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          authorDesc: 'description'
-        },
-        {
-          id: 3,
-          authorName: 'test',
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          authorDesc: 'description'
-        },
-        {
-          id: 4,
-          authorName: 'test',
-          thumbAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          authorDesc: 'description'
-        },
-      ]
+      this.$axios.get("/api/user/hm/hot?count=4")
+      .then(res => {
+        this.hotAuthors = res.data.data
+      })
     },
     // 跳转到具体图片页面
     toPicDetail(picId) {
-      console.log(picId);
+      // console.log(picId);
       this.$router.push({
         name: 'PicDetail',
         params: {
@@ -351,7 +275,7 @@ export default {
     },
     // 跳转到作者页面
     toAuthorDetail(authorId) {
-      console.log(authorId);
+      // console.log(authorId);
       this.$router.push({
         name: 'User',
         params: {

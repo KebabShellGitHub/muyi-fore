@@ -2,22 +2,22 @@
   <div>
     <!--  大图  -->
     <div>
-      <img style="width: 100%" src="../assets/fly.jpg"/>
+      <img style="width: 100%" :src="picDetail.picDtl.picUrl ? ('/api/pic/' + picDetail.picDtl.picUrl) : ''"/>
     </div>
     <!--图片详细数据-->
     <div class="pic-dtl">
       <a-row>
-        <a-col :span="6">拍摄地点 - {{ picDetail.picArea ? picDetail.picArea : 'no info' }}</a-col>
-        <a-col :span="6">拍摄日期 - {{ picDetail.picCreate ? picDetail.picCreate : 'no info' }}</a-col>
-        <a-col :span="6">拍摄设备 - {{ picDetail.picDevice ? picDetail.picDevice : 'no info' }}</a-col>
-        <a-col :span="6">编辑软件 - {{ picDetail.picEdit ? picDetail.picEdit : 'no info' }}</a-col>
+        <a-col :span="6">拍摄地点 - {{ picDetail.picDtl.picArea ? picDetail.picDtl.picArea : 'no info' }}</a-col>
+        <a-col :span="6">拍摄日期 - {{ picDetail.picBase.gmtCreate ? picDetail.picBase.gmtCreate : 'no info' }}</a-col>
+        <a-col :span="6">拍摄设备 - {{ picDetail.picDtl.picDevice ? picDetail.picDtl.picDevice : 'no info' }}</a-col>
+        <a-col :span="6">编辑软件 - {{ picDetail.picDtl.picEdit ? picDetail.picDtl.picEdit : 'no info' }}</a-col>
       </a-row>
     </div>
     <!--图片名+描述-->
     <div class="pic-description">
-      <h1>{{ picBase.picName ? picDetail.picName : 'no info' }}</h1>
+      <h1>{{ picDetail.picBase.picName ? picDetail.picBase.picName : 'no info' }}</h1>
       <p class="pic-description-font">
-        {{ picDetail.picDescription ? picDetail.picDescription : 'no info' }}
+        {{ picDetail.picBase.picDescription ? picDetail.picBase.picDescription : 'no info' }}
       </p>
     </div>
     <!--  作者部分  -->
@@ -25,21 +25,21 @@
       <a-row>
         <!--作者头像-->
         <a-col :span="4" style="text-align: center">
-          <a-avatar :size="128" :src="authorBase.userAvatarThumbUrl ? authorBase.userAvatarThumbUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'"
+          <a-avatar :size="128" :src="'/api/pic/' + authorBase.userDtl.userAvatarUrl"
                     style="border: 2px solid cornflowerblue"/>
         </a-col>
         <!--作者简介-->
         <a-col :span="16" style="padding-left: 20px; padding-right: 20px;">
-          <h1>{{ authorBase.userName ? authorBase.userName : 'no info' }}</h1>
+          <h1>{{ authorBase.userBase.userName ? authorBase.userBase.userName : 'no info' }}</h1>
           <p style="font-size: 25px; word-break: break-word">
-            {{ authorBase.userIntroduction ? authorBase.userIntroduction : 'no info' }}
+            {{ authorBase.userBase.userIntroduction ? authorBase.userBase.userIntroduction : 'no info' }}
           </p>
         </a-col>
         <!--图片统计数据-->
         <a-col :span="4">
           <!--数据-->
           <a-row>
-            <statistic :pic-id="this.picDetail.id"/>
+            <statistic :pic-id="picDetail.picBase.id"/>
           </a-row>
           <!--分类-->
           <a-row>
@@ -53,29 +53,29 @@
       <!--“分类”标题-->
       <h1 style="margin: 40px">Comments</h1>
       <!--v-for评论-->
-      <div class="single-comm" v-for="item in this.comments" :key="item">
+      <div class="single-comm" v-for="item in this.comments" :key="item.commentBase.id">
         <a-row>
           <!--评论人-->
           <a-col :span="2" style="text-align: center; border-right: 1px solid gray">
             <!--头像-->
             <a-row>
-              <a-avatar size="large" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              <a-avatar size="large" :src="'/api/pic/' + item.userBase.userAvatarThumbUrl"
                         style="border: 2px solid cornflowerblue"/>
             </a-row>
             <!--用户名-->
             <a-row style="text-align: center; margin-top: 10px">
-              name
+              {{ item.userBase.userName }}
             </a-row>
           </a-col>
           <!--评论内容-->
           <a-col :span="22" style="padding-left: 50px">
             <!--内容-->
             <a-row style="font-size: 20px; word-break: break-word">
-              aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+              {{ item.commentBase.commentContent }}
             </a-row>
             <!--评论时间-->
             <a-row style="text-align: right">
-              time
+              {{ item.commentBase.gmtCreate }}
             </a-row>
           </a-col>
         </a-row>
@@ -115,7 +115,6 @@
 </template>
 
 <script>
-import axios from "axios"; // 引入axios
 import statistic from "@/components/statistic";
 
 export default {
@@ -129,44 +128,63 @@ export default {
       sorts: [],
       statistics: {},
       comments: [],
-      commentsFlag: false
+      commentsFlag: false,
+      commentCount: 4,
+      commentPageNum: 1
     }
   },
   components: {
     statistic
   },
   created() {
-    // axios
-    //   .get("/mock/pics")
-    //   .then(res => {
-    //     // url即在mock.js中定义的
-    //     console.log(res.data); // 打印一下响应数据
-    //   })
-    //   .catch(res => {
-    //     alert("wrong");
-    //   });
     let picId = this.$route.params.id;
     this.picDetail.id = picId;
-    console.log('id:' + this.$route.params.id);
+    // console.log('id:' + this.$route.params.id);
+
     // 通过图片id拿到图片详细信息
-    let picDetail = {};
+    this.getPicDtl(picId)
+    .then(res => {
+      this.picDetail = res.data.data
+
+      let userId = this.picDetail.picBase.picAuthorId
+      this.getAuthor(userId).then(res => {
+        this.authorBase = res.data.data
+      })
+    })
     // 通过图片id拿到所属分类
     let sorts = [];
-    // 通过图片id拿到统计数据（点赞数、评论数、点击量
-    let statistics = {};
     // 通过图片id拿到前N条评论
-    let comments = [];
+    this.getComm(picId)
+    .then(res => {
+      this.comments = res.data.data
+      this.commentsFlag = true
+    })
 
   },
   methods: {
+    getPicDtl(picId){
+      return this.$axios.get("/api/pic/one?picId=" + picId)
+    },
+    getAuthor(userId){
+      return this.$axios.get("/api/user/get", {
+        params: {
+          userId: userId
+        }
+      })
+    },
     /**
      * 通过图片id拿到前count条评论
      * @param picId
      * @param count
      */
-    getComm(picId, count) {
-      let picDetail = {};
-      this.picDetail = picDetail;
+    getComm(picId) {
+      return this.$axios.get("/api/cm/get", {
+        params: {
+          picId: picId,
+          pageNum: this.commentPageNum,
+          count: this.commentCount
+        }
+      })
     },
     /**
      * 通过图片id拿到更多count条评论
