@@ -13,9 +13,10 @@
           <h1><a style="color: gray" @click="toHome()">木易 MUYI</a></h1>
         </div>
         <div class="header-user">
-          <router-link v-if="loginFlag" to="/user"
+          <router-link v-if="token !== null" to="/user"
           >
             <a-avatar size="small" style="backgroundColor:#87d068" icon="user"
+                      :src="'http://localhost:8080/pic/avatar-thumb/' + userAvatar"
             />
           </router-link>
           <div v-else>
@@ -56,31 +57,34 @@
 export default {
   data() {
     return {
-      loginFlag: false,
-      user: {
-        id: 1,
-        userName: 'test',
-        userAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      }
     };
   },
   created() {
-    // 验证用户是否登录及token的验证及拿到user的信息
-    let token = sessionStorage.getItem("Token");
-    if (token && this.tokenVerify(token)) {
-      this.loginFlag = true;
-      this.getUser(token);
-    } else {
-      this.loginFlag = false;
+    this.$store.dispatch('updateUserName', sessionStorage.getItem("userName"))
+    this.$store.dispatch('updateUserAvatar', sessionStorage.getItem("userAvatar"))
+    this.$store.dispatch('updateUserId', sessionStorage.getItem("userId"))
+  },
+  computed: {
+    userId(){
+      return this.$store.state.userId;
+    },
+    userName(){
+      return this.$store.state.userName;
+    },
+    userAvatar(){
+      return this.$store.state.userAvatar;
+    },
+    token(){
+      return this.$store.state.token;
     }
   },
   methods: {
     getUser(token) {
-      this.user = {
-        id: 1,
-        userName: 'test1',
-        userAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      }
+      // this.user = {
+      //   id: 1,
+      //   userName: 'test1',
+      //   userAvatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+      // }
     },
     tokenVerify(token) {
       return true;

@@ -5,10 +5,10 @@
         <!--     car:carousel走马灯     -->
         <div class="gradient">
           <!--    gradient:渐变    -->
-          <img :id="carFirstPic.id" class="car-img" :src="carFirstPic.thumbPath" @click="toPicDetail(carFirstPic.id)"/>
+          <img class="car-img" :src="'http://localhost:8080/pic/' + carFirstPic.picUrl" @click="toPicDetail(carFirstPic.picId)"/>
         </div>
-        <img v-for="item in carPics" :key="item.id" class="car-img" :src="item.thumbPath"
-             @click="toPicDetail(item.id)"/>
+        <img v-for="item in carPics" :key="item.picId" class="car-img" :src="'http://localhost:8080/pic/' + item.picUrl"
+             @click="toPicDetail(item.picId)"/>
       </a-carousel>
     </div>
     <!--  cpn:component  -->
@@ -134,10 +134,7 @@ export default {
   data() {
     return {
       // 走马灯第一张图片
-      carFirstPic: {
-        id: 0,
-        thumbPath: 'http://img.kebabshell.space/lm.jpg'
-      },
+      carFirstPic: {},
       // 走马灯剩下的图片
       carPics: [],
       // 推荐的4个图片
@@ -172,28 +169,13 @@ export default {
   },
   methods: {
     // 拿到走马灯的图片
-    getCarPics() {
+    async getCarPics() {
       // axios请求拿到 getCarPics
-      let getCarPics = [
-        {
-          id: 1,
-          thumbPath: 'http://img.kebabshell.space/lm.jpg'
-        },
-        {
-          id: 2,
-          thumbPath: 'http://img.kebabshell.space/lm.jpg'
-        },
-        {
-          id: 3,
-          thumbPath: 'http://img.kebabshell.space/lm.jpg'
-        },
-        {
-          id: 4,
-          thumbPath: 'http://img.kebabshell.space/lm.jpg'
-        }
-      ];
-      this.carFirstPic = getCarPics.shift();
-      this.carPics = getCarPics;
+      this.$axios.get("/api/pic/hm/car?count=" + 5)
+      .then(res => {
+        this.carPics = res.data.data
+        this.carFirstPic = this.carPics.shift()
+      })
     },
     // 拿到推荐图片
     getRecPics() {
